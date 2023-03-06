@@ -3,7 +3,7 @@ import styled from "styled-components";
 import { motion, AnimatePresence, useScroll } from "framer-motion";
 import { useState } from "react";
 import { useHistory, useRouteMatch } from "react-router-dom";
-import { getUpcome, IGetMovieResult } from "../api";
+import { getAiring, getMovies, IGetMovieResult, IGetTvResult } from "../api";
 import { makeImagePath } from "../utils";
 
 const Loader = styled.div`
@@ -12,7 +12,6 @@ const Loader = styled.div`
   justify-content: center;
   align-items: center;
 `;
-
 const Slider = styled.div`
   margin-bottom: 350px;
 `;
@@ -144,43 +143,43 @@ const SliderTitle = styled.div`
   }
 `;
 
-function UpcomingMovies() {
+function Popular() {
   const history = useHistory();
-  const bigMovieMatch = useRouteMatch<{ movieId: string }>("/movies/upcoming/:movieId");
+  const bigMovieMatch = useRouteMatch<{ movieId: string }>("/tv/popular/:movieId");
   const { scrollY } = useScroll();
-  const { data: data3, isLoading: isLoading3 } = useQuery<IGetMovieResult>(
-    ["movies", "UpcomingMovies"],
-    getUpcome
+  const { data: data1, isLoading: isLoading1 } = useQuery<IGetTvResult>(
+    ["movies", "popularTv"],
+    getAiring
   );
   
   const [index, set_index] = useState(0);
   const [leaving, set_leaving] = useState(false);
   const toggleLeaving = () => set_leaving((prev) => !prev);
   const increaseIndex = () => {
-    if (data3) {
+    if (data1) {
       if (leaving) return;
       toggleLeaving();
-      const totalMovies = data3?.results.length;
+      const totalMovies = data1?.results.length;
       const maxIndex = Math.floor(totalMovies / offset);
       set_index((prev) => (prev === maxIndex ? 0 : prev + 1));
     }
   };
   const onBoxClicked = (movieId: number) => {
-    history.push(`/movies/upcoming/${movieId}`);
+    history.push(`/tv/popular/${movieId}`);
   };
-  const onOverlayClicked = () => history.push("/");
+  const onOverlayClicked = () => history.push("/tv");
   const clickedMovie =
     bigMovieMatch?.params.movieId &&
-    data3?.results.find((movie) => movie.id === +bigMovieMatch.params.movieId);
+    data1?.results.find((movie) => movie.id === +bigMovieMatch.params.movieId);
   return (
     <>
-      {isLoading3 ? (
+      {isLoading1 ? (
         <Loader>Loading...</Loader>
       ) : (
         <>
           <Slider>
             <SliderTitle>
-              <h2>Upcoming Movies</h2>
+              <h2>Popular</h2>
               <span onClick={increaseIndex}>&rarr;</span>
             </SliderTitle>
             <AnimatePresence initial={false} onExitComplete={toggleLeaving}>
@@ -192,12 +191,12 @@ function UpcomingMovies() {
                 key={index}
                 transition={{ type: "tween", duration: 0.8 }}
               >
-                {data3?.results
+                {data1?.results
                   .slice(0)
                   .slice(offset * index, offset * index + offset)
                   .map((movie) => (
                     <Box
-                      layoutId={movie.id + "upcoming"}
+                      layoutId={movie.id + "popular"}
                       onClick={() => onBoxClicked(movie.id)}
                       key={movie.id}
                       bgphoto={makeImagePath(movie.backdrop_path, "w500")}
@@ -207,7 +206,7 @@ function UpcomingMovies() {
                       transition={{ type: "tween" }}
                     >
                       <Info variants={infoVar}>
-                        <h4>{movie.title}</h4>
+                        <h4>{movie.name}</h4>
                       </Info>
                     </Box>
                   ))}
@@ -223,7 +222,7 @@ function UpcomingMovies() {
                   exit={{ opacity: 0 }}
                 />
                 <BigMovie
-                  layoutId={bigMovieMatch.params.movieId + "upcoming"}
+                  layoutId={bigMovieMatch.params.movieId + "popular"}
                   style={{ top: scrollY.get() + 100 }}
                 >
                   {clickedMovie && (
@@ -236,7 +235,7 @@ function UpcomingMovies() {
                           )})`,
                         }}
                       />
-                      <BigTitle>{clickedMovie.title}</BigTitle>
+                      <BigTitle>{clickedMovie.name}</BigTitle>
                       <BigOverview>{clickedMovie.overview}</BigOverview>
                     </>
                   )}
@@ -249,4 +248,4 @@ function UpcomingMovies() {
     </>
   );
 }
-export default UpcomingMovies;
+export default Popular;

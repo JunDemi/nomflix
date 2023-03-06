@@ -160,7 +160,7 @@ function TopRatedMovies() {
       if (leaving) return;
       toggleLeaving();
       const totalMovies = data2?.results.length;
-      const maxIndex = Math.floor(totalMovies / offset) - 1;
+      const maxIndex = Math.floor(totalMovies / offset);
       set_index((prev) => (prev === maxIndex ? 0 : prev + 1));
     }
   };
@@ -192,7 +192,7 @@ function TopRatedMovies() {
                 transition={{ type: "tween", duration: 0.8 }}
               >
                 {data2?.results
-                  .slice(1)
+                  .slice(0)
                   .slice(offset * index, offset * index + offset)
                   .map((movie) => (
                     <Box

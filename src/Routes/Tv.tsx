@@ -1,6 +1,22 @@
-function Home() {
+import styled from "styled-components";
+import AiringToday from "../Components/AiringToday";
+import Popular from "../Components/Popular";
+import TopRatedTv from "../Components/TopRatedTv";
+import LatestShows from "../Components/LatestShows";
+
+const Wrapper = styled.div`
+  background-color: black;
+  width: 100%;
+  height: 100%;
+`;
+function Tv() {
   return (
-    <h1>Tv</h1>
+    <Wrapper>
+      <AiringToday />
+      <Popular/>
+      <TopRatedTv/>
+      <LatestShows/>
+    </Wrapper>
   );
 }
-export default Home;
+export default Tv;

@@ -130,14 +130,25 @@ const BigCover = styled.div`
 const BigTitle = styled.h3`
   color: ${(props) => props.theme.white.lighter};
   padding: 20px;
-  font-size: 36px;
+  font-size: 24px;
   position: relative;
-  top: -85px;
+  left: 200px;
+  top: -60px;
 `;
+const BigPoster = styled.div`
+  position: absolute;
+  top: 150px;
+  left: 20px;
+  width: 180px;
+  height: 240px;
+  background-size: cover;
+  background-position: center center;
+  box-shadow: 3px 3px 6px rgba(0,0,0,0.5);
+`
 const BigOverview = styled.p`
   padding: 20px;
   position: relative;
-  top: -80px;
+  top: 0px;
   color: ${(props) => props.theme.white.lighter}; ;
 `;
 const Result = styled.div`
@@ -229,13 +240,19 @@ function SearchMovie() {
                                         <>
                                             <BigCover
                                                 style={{
-                                                    backgroundImage: clickedMovie.backdrop_path === null ? 
-                                                    `linear-gradient(to top, black, transparent), url('https://www.salonlfc.com/wp-content/uploads/2018/01/image-not-found-1-scaled-1150x647.png')`
-                                                     : `linear-gradient(to top, black, transparent), url(${makeImagePath(
-                                                        clickedMovie.backdrop_path, "w500")})`
+                                                    backgroundImage: clickedMovie.backdrop_path === null ?
+                                                        `linear-gradient(to top, black, transparent), url('https://www.salonlfc.com/wp-content/uploads/2018/01/image-not-found-1-scaled-1150x647.png')`
+                                                        : `linear-gradient(to top, black, transparent), url(${makeImagePath(
+                                                            clickedMovie.backdrop_path, "w500")})`
                                                 }}
                                             />
                                             <BigTitle>{clickedMovie.title}</BigTitle>
+                                            <BigPoster style={{
+                                                backgroundImage: clickedMovie.poster_path === null ?
+                                                    `url('https://www.salonlfc.com/wp-content/uploads/2018/01/image-not-found-1-scaled-1150x647.png')`
+                                                    : `url(${makeImagePath(
+                                                        clickedMovie.poster_path, "w500")})`
+                                            }} />
                                             <BigOverview>{clickedMovie.overview || "No Description..."}</BigOverview>
                                         </>
                                     )}

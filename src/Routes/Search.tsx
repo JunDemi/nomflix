@@ -1,10 +1,10 @@
-import { useLocation } from "react-router";
+
+import SearchMovie from "../Components/SearchMovie";
 
 
 function Search() {
-  const location = useLocation();
-  const keyword = new URLSearchParams(location.search).get("keyword");
-  console.log(keyword);
-  return null;
+  return <>
+  <SearchMovie/>
+  </>
 }
 export default Search;

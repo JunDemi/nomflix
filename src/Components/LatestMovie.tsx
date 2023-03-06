@@ -1,9 +1,8 @@
 import { useQuery } from "react-query";
 import styled from "styled-components";
 import { motion, AnimatePresence, useScroll } from "framer-motion";
-import { useState } from "react";
 import { useHistory, useRouteMatch } from "react-router-dom";
-import { getLatest, getUpcome, IGetMovieResult, ILateMovieResult } from "../api";
+import { getLatest, ILateMovieResult } from "../api";
 import { makeImagePath } from "../utils";
 
 const Loader = styled.div`
@@ -25,7 +24,7 @@ const Row = styled(motion.div)`
   position: absolute;
   width: 100%;
 `;
-const Box = styled(motion.div)<{ bgphoto: string }>`
+const Box = styled(motion.div) <{ bgphoto: string }>`
   background-image: url(${(props) => props.bgphoto});
   background-size: cover;
   background-position: center center;
@@ -154,7 +153,7 @@ function LastestMovie() {
   const clickedMovie =
     bigMovieMatch?.params.movieId &&
     data4?.id === +bigMovieMatch?.params.movieId;
-    
+
   return (
     <>
       {isLoading4 ? (
@@ -174,19 +173,19 @@ function LastestMovie() {
                 exit="exit"
                 transition={{ type: "tween", duration: 0.8 }}
               >
-                    <Box
-                      layoutId={data4?.id + "latest"}
-                      onClick={() => onBoxClicked(Number(data4?.id))}
-                      bgphoto={makeImagePath(String(data4?.poster_path), "w500")}
-                      variants={boxVar}
-                      initial="normal"
-                      whileHover="hover"
-                      transition={{ type: "tween" }}
-                    >
-                      <Info variants={infoVar}>
-                        <h4>{data4?.title}</h4>
-                      </Info>
-                    </Box>
+                <Box
+                  layoutId={data4?.id + "latest"}
+                  onClick={() => onBoxClicked(Number(data4?.id))}
+                  bgphoto={data4?.backdrop_path === null ? 'https://www.salonlfc.com/wp-content/uploads/2018/01/image-not-found-1-scaled-1150x647.png' : makeImagePath(String(data4?.backdrop_path), "w500")}
+                  variants={boxVar}
+                  initial="normal"
+                  whileHover="hover"
+                  transition={{ type: "tween" }}
+                >
+                  <Info variants={infoVar}>
+                    <h4>{data4?.title}</h4>
+                  </Info>
+                </Box>
               </Row>
             </AnimatePresence>
           </Slider>
@@ -206,14 +205,14 @@ function LastestMovie() {
                     <>
                       <BigCover
                         style={{
-                          backgroundImage: `linear-gradient(to top, black, transparent), url(${makeImagePath(
-                            String(data4?.poster_path),
+                          backgroundImage: data4?.backdrop_path === null ? `linear-gradient(to top, black, transparent), url('https://www.salonlfc.com/wp-content/uploads/2018/01/image-not-found-1-scaled-1150x647.png')` : `linear-gradient(to top, black, transparent), url(${makeImagePath(
+                            String(data4?.backdrop_path),
                             "w500"
                           )})`,
                         }}
                       />
                       <BigTitle>{String(data4?.title)}</BigTitle>
-                      <BigOverview>{String(data4?.overview)}</BigOverview>
+                      <BigOverview>{String(data4?.overview) || "No Description..."}</BigOverview>
                     </>
                   )}
                 </BigMovie>

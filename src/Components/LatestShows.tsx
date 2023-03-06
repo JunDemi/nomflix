@@ -1,9 +1,8 @@
 import { useQuery } from "react-query";
 import styled from "styled-components";
 import { motion, AnimatePresence, useScroll } from "framer-motion";
-import { useState } from "react";
 import { useHistory, useRouteMatch } from "react-router-dom";
-import { getLatest, getLatestTv, ILateMovieResult, ILateTvResult } from "../api";
+import { getLatestTv, ILateTvResult } from "../api";
 import { makeImagePath } from "../utils";
 
 const Loader = styled.div`
@@ -177,7 +176,7 @@ function LatestShows() {
                     <Box
                       layoutId={data4?.id + "latetv"}
                       onClick={() => onBoxClicked(Number(data4?.id))}
-                      bgphoto={makeImagePath(String(data4?.poster_path), "w500")}
+                      bgphoto={data4?.backdrop_path === null ? 'https://www.salonlfc.com/wp-content/uploads/2018/01/image-not-found-1-scaled-1150x647.png' : makeImagePath(String(data4?.backdrop_path), "w500")}
                       variants={boxVar}
                       initial="normal"
                       whileHover="hover"
@@ -206,14 +205,14 @@ function LatestShows() {
                     <>
                       <BigCover
                         style={{
-                          backgroundImage: `linear-gradient(to top, black, transparent), url(${makeImagePath(
-                            String(data4?.poster_path),
+                          backgroundImage: data4?.backdrop_path === null ? `linear-gradient(to top, black, transparent), url('https://www.salonlfc.com/wp-content/uploads/2018/01/image-not-found-1-scaled-1150x647.png')` : `linear-gradient(to top, black, transparent), url(${makeImagePath(
+                            String(data4?.backdrop_path),
                             "w500"
                           )})`,
                         }}
                       />
                       <BigTitle>{String(data4?.name)}</BigTitle>
-                      <BigOverview>{String(data4?.overview)}</BigOverview>
+                      <BigOverview>{String(data4?.overview) || "No Description..."}</BigOverview>
                     </>
                   )}
                 </BigMovie>

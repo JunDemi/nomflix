@@ -141,7 +141,7 @@ function Header() {
   const { register, handleSubmit } = useForm<IForm>();
   const history = useHistory();
   const onValid = (data:IForm) => {
-    history.push(`/search?keyword=${data.keyword}`);
+    history.push(`/search/movie?keyword=${data.keyword}`);
   }
   return (
     <Nav

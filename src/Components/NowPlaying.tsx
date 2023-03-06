@@ -221,7 +221,7 @@ function NowPlaying() {
                       layoutId={movie.id + "nowplaying"}
                       onClick={() => onBoxClicked(movie.id)}
                       key={movie.id}
-                      bgphoto={makeImagePath(movie.backdrop_path, "w500")}
+                      bgphoto={movie.backdrop_path === null ? 'https://www.salonlfc.com/wp-content/uploads/2018/01/image-not-found-1-scaled-1150x647.png' : makeImagePath(movie.backdrop_path, "w500")}
                       variants={boxVar}
                       initial="normal"
                       whileHover="hover"
@@ -251,14 +251,14 @@ function NowPlaying() {
                     <>
                       <BigCover
                         style={{
-                          backgroundImage: `linear-gradient(to top, black, transparent), url(${makeImagePath(
-                            clickedMovie.backdrop_path,
-                            "w500"
-                          )})`,
+                          backgroundImage: clickedMovie.backdrop_path === null ?
+                            `linear-gradient(to top, black, transparent), url('https://www.salonlfc.com/wp-content/uploads/2018/01/image-not-found-1-scaled-1150x647.png')`
+                            : `linear-gradient(to top, black, transparent), url(${makeImagePath(
+                              clickedMovie.backdrop_path, "w500")})`
                         }}
                       />
                       <BigTitle>{clickedMovie.title}</BigTitle>
-                      <BigOverview>{clickedMovie.overview}</BigOverview>
+                      <BigOverview>{clickedMovie.overview || "No Description..."}</BigOverview>
                     </>
                   )}
                 </BigMovie>

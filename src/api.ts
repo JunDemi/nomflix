@@ -1,3 +1,5 @@
+import { useLocation } from "react-router-dom";
+
 const API_KEY = "142ae456a45ebbec61cb344c81f6e49f";
 const BASE_PATH = "https://api.themoviedb.org/3";
 

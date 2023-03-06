@@ -1,6 +1,7 @@
 import NowPlaying from "../Components/NowPlaying";
 import TopRatedMovies from "../Components/TopRatedMovies";
 import UpcomingMovies from "../Components/UpcomingMovies";
+import LatestMovie from "../Components/LatestMovie";
 import styled from "styled-components";
 
 const Wrapper = styled.div`
@@ -14,6 +15,7 @@ function Home() {
       <NowPlaying />
       <TopRatedMovies />
       <UpcomingMovies />
+      <LatestMovie/>
     </Wrapper>
   );
 }

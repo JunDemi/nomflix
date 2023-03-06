@@ -3,7 +3,7 @@ import styled from "styled-components";
 import { motion, AnimatePresence, useScroll } from "framer-motion";
 import { useState } from "react";
 import { useHistory, useRouteMatch } from "react-router-dom";
-import { getMovies, IGetMovieResult } from "../api";
+import { getTop, IGetMovieResult } from "../api";
 import { makeImagePath } from "../utils";
 
 const Loader = styled.div`
@@ -107,6 +107,7 @@ const BigMovie = styled(motion.div)`
   margin: 0 auto;
   border-radius: 15px;
   overflow: hidden;
+  z-index: 100;
   background-color: ${(props) => props.theme.black.lighter};
 `;
 const BigCover = styled.div`
@@ -145,34 +146,34 @@ const SliderTitle = styled.div`
 
 function TopRatedMovies() {
   const history = useHistory();
-  const bigMovieMatch = useRouteMatch<{ movieId: string }>("/movies/:movieId");
+  const bigMovieMatch = useRouteMatch<{ movieId: string }>("/movies/toprate/:movieId");
   const { scrollY } = useScroll();
-  const { data, isLoading } = useQuery<IGetMovieResult>(
-    ["movies", "nowPlaying"],
-    getMovies
+  const { data: data2, isLoading: isLoading2 } = useQuery<IGetMovieResult>(
+    ["movies", "TopRating"],
+    getTop
   );
   const [index, set_index] = useState(0);
   const [leaving, set_leaving] = useState(false);
   const toggleLeaving = () => set_leaving((prev) => !prev);
   const increaseIndex = () => {
-    if (data) {
+    if (data2) {
       if (leaving) return;
       toggleLeaving();
-      const totalMovies = data?.results.length;
+      const totalMovies = data2?.results.length;
       const maxIndex = Math.floor(totalMovies / offset) - 1;
       set_index((prev) => (prev === maxIndex ? 0 : prev + 1));
     }
   };
   const onBoxClicked = (movieId: number) => {
-    history.push(`/movies/${movieId}`);
+    history.push(`/movies/toprate/${movieId}`);
   };
   const onOverlayClicked = () => history.push("/");
   const clickedMovie =
     bigMovieMatch?.params.movieId &&
-    data?.results.find((movie) => movie.id === +bigMovieMatch.params.movieId);
+    data2?.results.find((movie) => movie.id === +bigMovieMatch.params.movieId);
   return (
     <>
-      {isLoading ? (
+      {isLoading2 ? (
         <Loader>Loading...</Loader>
       ) : (
         <>
@@ -190,12 +191,12 @@ function TopRatedMovies() {
                 key={index}
                 transition={{ type: "tween", duration: 0.8 }}
               >
-                {data?.results
+                {data2?.results
                   .slice(1)
                   .slice(offset * index, offset * index + offset)
                   .map((movie) => (
                     <Box
-                      layoutId={movie.id + ""}
+                      layoutId={movie.id + "toprate"}
                       onClick={() => onBoxClicked(movie.id)}
                       key={movie.id}
                       bgphoto={makeImagePath(movie.backdrop_path, "w500")}
@@ -221,7 +222,7 @@ function TopRatedMovies() {
                   exit={{ opacity: 0 }}
                 />
                 <BigMovie
-                  layoutId={bigMovieMatch.params.movieId}
+                  layoutId={bigMovieMatch.params.movieId + "toprate"}
                   style={{ top: scrollY.get() + 100 }}
                 >
                   {clickedMovie && (

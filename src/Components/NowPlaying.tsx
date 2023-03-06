@@ -121,6 +121,7 @@ const BigMovie = styled(motion.div)`
   background-color: black;
   left: 0;
   right: 0;
+  z-index: 100;
   margin: 0 auto;
   border-radius: 15px;
   overflow: hidden;
@@ -162,40 +163,41 @@ const SliderTitle = styled.div`
 
 function NowPlaying() {
   const history = useHistory();
-  const bigMovieMatch = useRouteMatch<{ movieId: string }>("/movies/:movieId");
+  const bigMovieMatch = useRouteMatch<{ movieId: string }>("/movies/nowplaying/:movieId");
   const { scrollY } = useScroll();
-  const { data, isLoading } = useQuery<IGetMovieResult>(
+  const { data: data1, isLoading: isLoading1 } = useQuery<IGetMovieResult>(
     ["movies", "nowPlaying"],
     getMovies
   );
+  
   const [index, set_index] = useState(0);
   const [leaving, set_leaving] = useState(false);
   const toggleLeaving = () => set_leaving((prev) => !prev);
   const increaseIndex = () => {
-    if (data) {
+    if (data1) {
       if (leaving) return;
       toggleLeaving();
-      const totalMovies = data?.results.length;
+      const totalMovies = data1?.results.length;
       const maxIndex = Math.floor(totalMovies / offset) - 1;
       set_index((prev) => (prev === maxIndex ? 0 : prev + 1));
     }
   };
   const onBoxClicked = (movieId: number) => {
-    history.push(`/movies/${movieId}`);
+    history.push(`/movies/nowplaying/${movieId}`);
   };
   const onOverlayClicked = () => history.push("/");
   const clickedMovie =
     bigMovieMatch?.params.movieId &&
-    data?.results.find((movie) => movie.id === +bigMovieMatch.params.movieId);
+    data1?.results.find((movie) => movie.id === +bigMovieMatch.params.movieId);
   return (
     <>
-      {isLoading ? (
+      {isLoading1 ? (
         <Loader>Loading...</Loader>
       ) : (
         <>
-          <Banner bgphoto={makeImagePath(data?.results[0].backdrop_path || "")}>
-            <Title>{data?.results[0].title}</Title>
-            <Overview>{data?.results[0].overview}</Overview>
+          <Banner bgphoto={makeImagePath(data1?.results[0].backdrop_path || "")}>
+            <Title>{data1?.results[0].title}</Title>
+            <Overview>{data1?.results[0].overview}</Overview>
           </Banner>
           <Slider>
             <SliderTitle>
@@ -211,12 +213,12 @@ function NowPlaying() {
                 key={index}
                 transition={{ type: "tween", duration: 0.8 }}
               >
-                {data?.results
+                {data1?.results
                   .slice(1)
                   .slice(offset * index, offset * index + offset)
                   .map((movie) => (
                     <Box
-                      layoutId={movie.id + ""}
+                      layoutId={movie.id + "nowplaying"}
                       onClick={() => onBoxClicked(movie.id)}
                       key={movie.id}
                       bgphoto={makeImagePath(movie.backdrop_path, "w500")}
@@ -242,7 +244,7 @@ function NowPlaying() {
                   exit={{ opacity: 0 }}
                 />
                 <BigMovie
-                  layoutId={bigMovieMatch.params.movieId}
+                  layoutId={bigMovieMatch.params.movieId + "nowplaying"}
                   style={{ top: scrollY.get() + 100 }}
                 >
                   {clickedMovie && (

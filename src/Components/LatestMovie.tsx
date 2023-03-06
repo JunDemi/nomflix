@@ -3,7 +3,7 @@ import styled from "styled-components";
 import { motion, AnimatePresence, useScroll } from "framer-motion";
 import { useState } from "react";
 import { useHistory, useRouteMatch } from "react-router-dom";
-import { getUpcome, IGetMovieResult } from "../api";
+import { getLatest, getUpcome, IGetMovieResult, ILateMovieResult } from "../api";
 import { makeImagePath } from "../utils";
 
 const Loader = styled.div`
@@ -31,12 +31,7 @@ const Box = styled(motion.div)<{ bgphoto: string }>`
   background-position: center center;
   height: 200px;
   cursor: pointer;
-  &:first-child {
-    transform-origin: center left;
-  }
-  &:last-child {
-    transform-origin: center right;
-  }
+  transform-origin: center left;
 `;
 const rowVar = {
   hide: {
@@ -72,7 +67,6 @@ const infoVar = {
     },
   },
 };
-const offset = 6;
 
 const boxVar = {
   normal: {
@@ -144,73 +138,55 @@ const SliderTitle = styled.div`
   }
 `;
 
-function UpcomingMovies() {
+function LastestMovie() {
   const history = useHistory();
-  const bigMovieMatch = useRouteMatch<{ movieId: string }>("/movies/upcoming/:movieId");
+  const bigMovieMatch = useRouteMatch<{ movieId: string }>("/movies/latest/:movieId");
   const { scrollY } = useScroll();
-  const { data: data3, isLoading: isLoading3 } = useQuery<IGetMovieResult>(
-    ["movies", "UpcomingMovies"],
-    getUpcome
+  const { data: data4, isLoading: isLoading4 } = useQuery<ILateMovieResult>(
+    ["movies", "LatestMovie"],
+    getLatest
   );
-  
-  const [index, set_index] = useState(0);
-  const [leaving, set_leaving] = useState(false);
-  const toggleLeaving = () => set_leaving((prev) => !prev);
-  const increaseIndex = () => {
-    if (data3) {
-      if (leaving) return;
-      toggleLeaving();
-      const totalMovies = data3?.results.length;
-      const maxIndex = Math.floor(totalMovies / offset) - 1;
-      set_index((prev) => (prev === maxIndex ? 0 : prev + 1));
-    }
-  };
+
   const onBoxClicked = (movieId: number) => {
-    history.push(`/movies/upcoming/${movieId}`);
+    history.push(`/movies/latest/${movieId}`);
   };
   const onOverlayClicked = () => history.push("/");
   const clickedMovie =
     bigMovieMatch?.params.movieId &&
-    data3?.results.find((movie) => movie.id === +bigMovieMatch.params.movieId);
+    data4?.id === +bigMovieMatch?.params.movieId;
+    
   return (
     <>
-      {isLoading3 ? (
+      {isLoading4 ? (
         <Loader>Loading...</Loader>
       ) : (
         <>
           <Slider>
             <SliderTitle>
-              <h2>Upcoming Movies</h2>
-              <span onClick={increaseIndex}>&rarr;</span>
+              <h2>Latest movie</h2>
+              <span></span>
             </SliderTitle>
-            <AnimatePresence initial={false} onExitComplete={toggleLeaving}>
+            <AnimatePresence>
               <Row
                 variants={rowVar}
                 initial="hide"
                 animate="show"
                 exit="exit"
-                key={index}
                 transition={{ type: "tween", duration: 0.8 }}
               >
-                {data3?.results
-                  .slice(1)
-                  .slice(offset * index, offset * index + offset)
-                  .map((movie) => (
                     <Box
-                      layoutId={movie.id + "upcoming"}
-                      onClick={() => onBoxClicked(movie.id)}
-                      key={movie.id}
-                      bgphoto={makeImagePath(movie.backdrop_path, "w500")}
+                      layoutId={data4?.id + "latest"}
+                      onClick={() => onBoxClicked(Number(data4?.id))}
+                      bgphoto={makeImagePath(String(data4?.poster_path), "w500")}
                       variants={boxVar}
                       initial="normal"
                       whileHover="hover"
                       transition={{ type: "tween" }}
                     >
                       <Info variants={infoVar}>
-                        <h4>{movie.title}</h4>
+                        <h4>{data4?.title}</h4>
                       </Info>
                     </Box>
-                  ))}
               </Row>
             </AnimatePresence>
           </Slider>
@@ -223,7 +199,7 @@ function UpcomingMovies() {
                   exit={{ opacity: 0 }}
                 />
                 <BigMovie
-                  layoutId={bigMovieMatch.params.movieId + "upcoming"}
+                  layoutId={bigMovieMatch.params.movieId + "latest"}
                   style={{ top: scrollY.get() + 100 }}
                 >
                   {clickedMovie && (
@@ -231,13 +207,13 @@ function UpcomingMovies() {
                       <BigCover
                         style={{
                           backgroundImage: `linear-gradient(to top, black, transparent), url(${makeImagePath(
-                            clickedMovie.backdrop_path,
+                            String(data4?.poster_path),
                             "w500"
                           )})`,
                         }}
                       />
-                      <BigTitle>{clickedMovie.title}</BigTitle>
-                      <BigOverview>{clickedMovie.overview}</BigOverview>
+                      <BigTitle>{String(data4?.title)}</BigTitle>
+                      <BigOverview>{String(data4?.overview)}</BigOverview>
                     </>
                   )}
                 </BigMovie>
@@ -249,4 +225,4 @@ function UpcomingMovies() {
     </>
   );
 }
-export default UpcomingMovies;
+export default LastestMovie;
